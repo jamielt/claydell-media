@@ -1,0 +1,12 @@
+/*
+Styles for older IE versions (previous to IE9).
+*/
+
+/* =Social Media feed link icons
+----------------------------------------------- */
+
+.social-media li {
+	background-color: #fafafa;
+	float: left;
+	margin: 0 2.79733333% 0.933333333em 0;
+}
