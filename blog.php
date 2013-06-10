@@ -39,11 +39,6 @@ get_header(); ?>
 
 					while ($blog_articles->have_posts()) : $blog_articles->the_post(); ?>
 						<?php
-							if ('odd' == $odd_or_even){
-							$odd_or_even = 'even';
-							}else{
-							$odd_or_even = 'odd';
-							}
 							get_template_part( 'content', 'blog' );
 						?>
 					<?php endwhile; // end the loop.

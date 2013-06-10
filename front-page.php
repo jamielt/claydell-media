@@ -5,8 +5,6 @@
  * @package Claydell Media
  */
 
-global $odd_or_even;
-
 get_header(); ?>
 
 		<div id="primary" class="site-content">
