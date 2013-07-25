@@ -5,6 +5,8 @@
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+				
+<!-- <h3 class="author-posts"><?php //printf( __( 'Posts by %s:', 'claydellmedia' ), get_the_author() ); ?></h3> -->
 
 	<header class="entry-header">
 		<a href="<?php echo get_author_posts_url( get_the_author_meta( 'ID' ) ); ?>" title="<?php echo esc_attr( sprintf( __( 'View all posts by %s', 'claydellmedia' ), get_the_author() ) ); ?>">
@@ -19,14 +21,23 @@
 		<?php endif; ?>
 	</header><!-- .entry-header -->
 
-	<?php if ( is_search() ) : // Only display Excerpts for Search ?>
+	<?php if ( is_home() || is_archive() || is_search() ) : // Only display Excerpts for archives & search ?>
 	<div class="entry-summary">
-		<?php the_excerpt(); ?>
+		<div class="alignleft">
+		<a href="<?php the_permalink(); ?>"><?php if ( has_post_thumbnail() ) the_post_thumbnail(); ?></a>
+		</div><!-- .alignleft -->
+		<?php the_excerpt( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'claydellmedia' ) ); ?>
 	</div><!-- .entry-summary -->
+	<div class="clear"></div>
 	<?php else : ?>
 	<div class="entry-content">
 		<?php the_content( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'claydellmedia' ) ); ?>
-		<?php wp_link_pages( array( 'before' => '<div class="page-links">' . __( 'Pages:', 'claydellmedia' ), 'after' => '</div>' ) ); ?>
+		<?php
+			wp_link_pages( array(
+				'before' => '<div class="page-links">' . __( 'Pages:', 'claydellmedia' ),
+				'after'  => '</div>',
+			) );
+		?>
 	</div><!-- .entry-content -->
 	<?php endif; ?>
 

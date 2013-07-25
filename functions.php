@@ -2,7 +2,10 @@
 /**
  * Claydell Media functions and definitions
  *
- * @package Claydell Media
+ * @package      Claydell Media
+ * @author       Jamie Thompson <jamie@jamiethompson.com>
+ * @license      http://http://opensource.org/licenses/gpl-3.0.html
+ * GNU General Public License, version 3 (GPL-3.0).
  */
 
 /**
@@ -129,16 +132,12 @@ function claydellmedia_setup() {
 	require( get_template_directory() . '/inc/customizer.php' );
 
 	/**
-	 * Enable support for posts thumbnails
+	 * Enable support for posts thumbnails on posts and pages.
 	 */
-	add_theme_support( 'post-thumbnails', array( 'post', 'page' ) );
+	add_theme_support( 'post-thumbnails' );
+	set_post_thumbnail_size( 276, 9999 ); // Unlimited height, soft crop
 
-	/**
-	 * We'll be using post thumbnails on posts and pages.
-	 */ 
-	set_post_thumbnail_size( 278, 200, true );
-
-	// Featured Rotator
+	// Add image sizes for assorted thumbnails.
 	add_image_size( 'featured-post-image', 964, 288, true );
 	add_image_size( 'post-sprite', 20, 20, true);
 
@@ -164,23 +163,78 @@ function claydellmedia_setup() {
 	add_theme_support( 'print-style' );
 
 	// Add support for custom backgrounds.
-	$bg_args = array(
-		'default-color' => 'edeaf1',
-		'default-image' => get_template_directory_uri() . '/images/bg.jpg'
+	$args = array(
+		'default-color' => 'edeaf1f',
+		'default-image' => get_template_directory_uri() . '/images/bg.jpg',
 	);
-	$bg_args = apply_filters( 'claydellmedia_custom_background_args', $bg_args );
 
-	// 3.4 check
-	if ( wp_get_theme() ) {
-		add_theme_support( 'custom-background', $bg_args );
-	} else {
-		define( 'BACKGROUND_COLOR', $bg_args['default-color'] );
-		define( 'BACKGROUND_IMAGE', $bg_args['default-image'] );
+	$args = apply_filters( 'claydellmedia_custom_background_args', $args );
+
+	if ( function_exists( 'wp_get_theme' ) ) {
 		add_theme_support( 'custom-background', $args );
-		add_action( 'wp_head', 'claydellmedia_custom_background' );
+	} else {
+		define( 'BACKGROUND_COLOR', $args['default-color'] );
+		if ( ! empty( $args['default-image'] ) )
+			define( 'BACKGROUND_IMAGE', $args['default-image'] );
+		add_custom_background();
 	}
 }
 endif; // claydellmedia_setup
+
+/**
+ * Filters wp_title to print a neat <title> tag based on what is being viewed.
+ */
+function claydellmedia_wp_title( $title, $sep ) { // taken from TwentyTen 1.0
+
+	// Don't affect wp_title() calls in feeds.
+	if ( is_feed() )
+		return $title;
+
+	// The $paged global variable contains the page number of a listing of posts.
+	// The $page global variable contains the page number of a single post that is paged.
+	// We'll display whichever one applies, if we're not looking at the first page.
+	global $page, $paged;
+
+	if ( is_search() ) {
+		// If we're a search, let's start over:
+		$title = sprintf( 'Search results for %s', '"' . get_search_query() . '"' );
+		// Add a page number if we're on page 2 or more:
+		if ( $paged >= 2 )
+			$title .= " $sep" . sprintf( 'Page %s', $paged );
+		// Add the site name to the end:
+		$title .= " $sep " . get_bloginfo( 'name', 'display' );
+		// We're done. Let's send the new title back to wp_title():
+		return $title;
+	}
+
+	// Add the blog name.
+	$title .= get_bloginfo( 'name', 'display' );
+
+	// Add the blog description for the home/front page.
+	$site_description = get_bloginfo( 'description', 'display' );
+	if ( $site_description && ( is_home() || is_front_page() ) )
+		$title .= " $sep $site_description";
+
+	// Add a page number if necessary:
+	if ( $paged >= 2 || $page >= 2 )
+		$title .= " $sep " . sprintf( __( 'Page %s', 'claydellmedia' ), max( $paged, $page ) );
+
+	// Return the new title to wp_title():
+	return $title;
+}
+add_filter( 'wp_title', 'claydellmedia_wp_title', 10, 2 );
+
+/**
+ * Filter in a way to make sure empty post title links reach the post.
+ */
+ add_filter('the_title', 'claydell_title');
+	function claydell_title($title) {
+	if ($title == '') {
+	return 'Untitled';
+	} else {
+	return $title;
+	}
+}
 
 add_action( 'after_setup_theme', 'claydellmedia_setup' );
 
@@ -189,12 +243,22 @@ add_action( 'after_setup_theme', 'claydellmedia_setup' );
  */
 function claydellmedia_custom_header_setup() {
 	$args = array(
-		'default-image'			=> get_template_directory_uri() . '/images/default-logo.png',
-		'default-text-color'     => '000',
-		'width'                  => 984,
-		'flex-width'             => true,
+		// Image and text color (empty to use none).
+		'default-image'			=> '',
+		'default-text-color'     => 'fff',
+
+		// Set height and width, with a maximum value for the width.
 		'height'                 => 242,
-		'flex-height'            => true,
+		'width'                  => 984,
+
+		// Support flexible height and width.
+		'flex-height'            => false,
+		'flex-width'             => false,
+
+		// Random image rotation off by default.
+		'random-default'         => false,
+
+		// Callbacks for styling the header and the admin preview.
 		'wp-head-callback'       => 'claydellmedia_header_style',
 		'admin-head-callback'    => 'claydellmedia_admin_header_style',
 		'admin-preview-callback' => 'claydellmedia_admin_header_image',
@@ -210,7 +274,7 @@ function claydellmedia_custom_header_setup() {
 		define( 'HEADER_IMAGE',        $args['default-image'] );
 		define( 'HEADER_IMAGE_WIDTH',  $args['width'] );
 		define( 'HEADER_IMAGE_HEIGHT', $args['height'] );
-		add_theme_support( 'custom-header', $args['wp-head-callback'], $args['admin-head-callback'], $args['admin-preview-callback'] );
+		add_custom_image_header( $args['wp-head-callback'], $args['admin-head-callback'], $args['admin-preview-callback'] );
 	}
 
 	// Default custom headers packaged with the theme. %s is a placeholder for the theme template directory URI.
@@ -327,19 +391,25 @@ function claydellmedia_admin_header_style() {
 		font-size: 44px;
 		font-weight: normal;
 		line-height: 52px;
-		margin: 0 0 0 110px;
+		margin: 0;
 		max-width: 652px;
+		padding: 0 0 10px;
 	}
 	#headimg h1 a {
 		text-decoration: none;
 	}
 	#desc {
-		float: right;
+		border-color: #545454;
+		border-top: 1px dotted #545454;
+		clear: both;
+		float: none;
 		font-size: 12px;
-		font-style: italic;
+		font-style: normal;
 		line-height: 22px;
-		margin: 26px 0 0 0;
-		max-width: 186px;
+		margin: 0;
+		max-width: 100%;
+		padding: 0;
+		text-align: center;
 	}
 	#headimg img {
 		clear: both;
@@ -434,12 +504,42 @@ add_filter( 'wp_page_menu_args', 'claydellmedia_page_menu_args' );
  */
 function claydellmedia_widgets_init() {
 	register_sidebar( array(
-		'name' => __( 'Sidebar', 'claydellmedia' ),
+		'name' => __( 'Main Sidebar', 'claydellmedia' ),
 		'id' => 'sidebar-1',
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 		'after_widget' => "</aside>",
-		'before_title' => '<h1 class="widget-title">',
-		'after_title' => '</h1>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	) );
+	
+	register_sidebar( array(
+		'name' => __( 'First Footer Widget Area', 'claydellmedia' ),
+		'id' => 'footer-sidebar-1',
+		'description' => 'Appears in the footer area',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	) );
+
+	register_sidebar( array(
+		'name' => __( 'Second Footer Widget Area', 'claydellmedia' ),
+		'id' => 'footer-sidebar-2',
+		'description' => 'Appears in the footer area',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
+	) );
+
+	register_sidebar( array(
+		'name' => __( 'Third Footer Widget Area', 'claydellmedia' ),
+		'id' => 'footer-sidebar-3',
+		'description' => 'Appears in the footer area',
+		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+		'after_widget' => '</aside>',
+		'before_title' => '<h3 class="widget-title">',
+		'after_title' => '</h3>',
 	) );
 }
 add_action( 'widgets_init', 'claydellmedia_widgets_init' );
@@ -603,16 +703,6 @@ function claydellmedia_scripts() {
 		wp_enqueue_script( 'keyboard-image-navigation', get_template_directory_uri() . '/js/keyboard-image-navigation.js', array( 'jquery' ), '20120202' );
 	}
 	
-	wp_enqueue_script('jquery');
-	wp_enqueue_script('jquery-ui-core');
-	wp_enqueue_script('jquery-ui-tabs');
-	
-	wp_enqueue_script( 'jquery-ui-tabs-rotate-script', get_template_directory_uri() .  '/js/jquery-ui-tabs-rotate.js', array( 'jquery' ), false, true );
-	
-	wp_enqueue_script( 'claydellmedia-rotator-script', get_template_directory_uri() .  '/js/jquery-ui-tabs-rotator.js', array( 'jquery' ), false, true );
-	
-	wp_enqueue_style( 'claydellmedia-rotator-style', get_template_directory_uri() . '/css/jquery-ui-tabs-rotator.css' );
-	
 	wp_enqueue_style( 'claydellmedia-ie-style', get_template_directory_uri() . '/css/ie.css' );
 	
 	wp_enqueue_style( 'claydellmedia-printer-style', get_template_directory_uri() . '/print.css' );
@@ -625,35 +715,20 @@ add_action( 'wp_enqueue_scripts', 'claydellmedia_scripts' );
 /**
  * Register Google Fonts style.
  */
-function claydellmedia_register_fonts() {
-	$protocol = is_ssl() ? 'https' : 'http';
-	wp_register_style(
-		'claydellmedia-droid-serif',
-		"$protocol://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic",
-		array(),
-		'20120821'
-	);
+if ( !function_exists( 'claydellmedia_google_fonts' ) ) {
+	function claydellmedia_google_fonts() {
+		if ( !is_admin() ) {
+			wp_register_style( 'claydellmedia_droid_serif', 'http://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic', '', null, 'screen' );
+			wp_register_style( 'claydellmedia_open_sans', 'http://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600italic,700,700italic,800,800italic', '', null, 'screen' );
+			wp_register_style( 'claydellmedia_rokkitt', 'http://fonts.googleapis.com/css?family=Rokkitt:400,700', '', null, 'screen' );
+			wp_enqueue_style( 'claydellmedia_droid_serif' );
+			wp_enqueue_style( 'claydellmedia_open_sans' );
+			wp_enqueue_style( 'claydellmedia_rokkitt' );
+		}
+	}
 }
-add_action( 'init', 'claydellmedia_register_fonts' );
 
-/**
- * Enqueue Google Fonts style.
- */
-function claydellmedia_fonts() {
-	wp_enqueue_style( 'claydellmedia-droid-serif');
-}
-add_action( 'wp_enqueue_scripts', 'claydellmedia_fonts' );
-
-/**
- * Enqueue Google fonts style to admin screen for custom header display.
- */
-function claydellmedia_admin_fonts( $hook_suffix ) {
-	if ( 'appearance_page_custom-header' != $hook_suffix )
-		return;
-
-	wp_enqueue_style( 'claydellmedia-droid-serif');
-}
-add_action( 'admin_enqueue_scripts', 'claydellmedia_admin_fonts' );
+add_action( 'init', 'claydellmedia_google_fonts', 10 );
 
 // COMPAT: Pre-3.4 Background style for front-end.
 function claydellmedia_custom_background() {
@@ -675,86 +750,6 @@ function claydellmedia_custom_background() {
 }
 
 /**
- * If a User has filled out their description, display an Author List with Avatars.
- */
-function claydellmedia_contributors() {
-global $wpdb;
-
-$authors = $wpdb->get_results("SELECT ID, user_nicename from $wpdb->users WHERE display_name <> 'admin' ORDER BY display_name");
-
-foreach ($authors as $author ) {
-
-	echo "<li>";
-	echo "<a href=\"".get_bloginfo('url')."/author/";
-	the_author_meta('user_nicename', $author->ID);
-	echo "/\">";
-	echo get_avatar($author->ID);
-	echo "</a>";
-	echo '<div>';
-	echo "<a href=\"".get_bloginfo('url')."/author/";
-	the_author_meta('user_nicename', $author->ID);
-	echo "/\">";
-	the_author_meta('display_name', $author->ID);
-	echo "</a>";
-	echo "<br />";
-	echo "Website: <a href=\"";
-	the_author_meta('user_url', $author->ID);
-	echo "/\" target='_blank'>";
-	the_author_meta('user_url', $author->ID);
-	echo "</a>";
-	echo "<br />";
-	echo "Twitter: <a href=\"http://twitter.com/";
-	the_author_meta('twitter', $author->ID);
-	echo "\" target='_blank'>";
-	the_author_meta('twitter', $author->ID);
-	echo "</a>";
-	echo "<br />";
-	echo "<a href=\"".get_bloginfo('url')."/author/";
-	the_author_meta('user_nicename', $author->ID);
-	echo "/\">Visit&nbsp;";
-	the_author_meta('display_name', $author->ID);
-	echo "'s Profile Page";
-	echo "</a>";
-	echo "</div>";
-	echo "</li>";
-	}
-}
-
-/**
-*Display Author Links on the Profile Page.
-*/
-
-	function claydellmedia_contactmethods( $contactmethods ) {
-	// Add Facebook
-	$contactmethods['facebook'] = 'Facebook';
-	// Add Google+
-	$contactmethods['google+'] = 'Google+';
-	// Add Linkedin
-	$contactmethods['linkedin'] = 'Linkedin';
-	// Add Skype
-	$contactmethods['skype'] = 'Skype';
-	// Add Twitter
-	$contactmethods['twitter'] = 'Twitter';
-	  
-	return $contactmethods;
-	}
-	add_filter('user_contactmethods','claydellmedia_contactmethods',10,1);
-
-/**
- * Add a favicon
- */ 
-function claydellmedia_favicon() { ?>
-	<!-- <link rel="shortcut icon" href="<?php get_stylesheet_directory_uri(); ?>/images/favicon.ico" /> -->
-	<!-- Hide this line for IE (needed for Firefox and others) -->
-	<![if !IE]>
-	<link rel="icon" href="<?php echo get_template_directory_uri(); ?>/images/favicon.png" type="image/x-icon" />
-	<![endif]>
-	<!-- This is needed for IE -->
-	<link rel="shortcut icon" href="<?php echo get_template_directory_uri(); ?>/images/favicon.ico" type="image/ico" />
-	<?php }
-add_action('wp_head', 'claydellmedia_favicon');
-
-/**
  * Creates a back to top link
  */
 function claydellmedia_wp_head() { ?>
@@ -764,127 +759,26 @@ function claydellmedia_wp_head() { ?>
 add_action('wp_head', 'claydellmedia_wp_head');
 
 /**
- * Create a back to top link in the footer.
+ * Display the Footer stuff.
  */
-function claydellmedia_footer_backtotop() { ?>
-<!-- Begin Backtotop -->
+
+	// Create a back to top link in the footer.
+	function claydellmedia_footer_backtotop() { ?>
+	<!-- Begin Backtotop -->
 	<div class="backtotop"><a href="<?php echo esc_url( __( '#PageTop', 'claydellmedia' ) ); ?>" title="<?php esc_attr_e( 'Back to top of page', 'claydellmedia' ); ?>"><img src="<?php echo get_template_directory_uri(); ?>/images/icon_top.png" width="48px" height="48px" alt="Back to Top" /></a></div>
-<!-- End Backtotop -->
-<?php }
+	<!-- End Backtotop -->
+	<?php }
  
-add_action('claydellmedia_backtotop', 'claydellmedia_footer_backtotop');
+	add_action('claydellmedia_backtotop', 'claydellmedia_footer_backtotop');
 
-/**
- * Register a custom taxonomy for featuring pages
- */
-register_taxonomy(
-	'featured',
-	'page',
-	array(
-		'labels' => array(
-			'name' => __( 'Featured', 'claydellmedia' ),
-		),
-		'public' => false,
-	)
-);
-
-/**
- * Set a default term for the Featured Page taxonomy
- */
-function claydellmedia_featured_term() {
-	wp_insert_term(
-		'Featured',
-		'featured'
-	);
-}
-add_action( 'after_setup_theme', 'claydellmedia_featured_term' );
-
-/**
- * Add a custom meta box for the Featured Page taxonomy
- */
-function claydellmedia_add_meta_box() {
-	add_meta_box(
-		'claydellmedia-featured',
-		__( 'Featured Page', 'claydellmedia' ),
-		'claydellmedia_create_meta_box',
-		'page',
-		'side',
-		'core'
-	);
-}
-add_action( 'add_meta_boxes', 'claydellmedia_add_meta_box' );
-
-/**
- * Create a custom meta box for the Featured Page taxonomy
- */
-function claydellmedia_create_meta_box( $post ) {
-	
-	// Use nonce for verification
-  	wp_nonce_field( 'claydellmedia_featured_page', 'claydellmedia_featured_page_nonce' );
-
-	// Retrieve the metadata values if they exist
-	$use_as_feature = get_post_meta( $post->ID, '_use_as_feature', true );
-	
-	?>
-		<label for="use_as_feature">
-			<input type="checkbox" name="use_as_feature" id="use_as_feature" <?php checked( 'on', $use_as_feature ); ?> />
-			<?php printf( __( 'Feature on the %1$s front page', 'claydellmedia' ), '<em>' . get_bloginfo( 'title' ) . '</em>' ); ?>
-		</label>
-	<?php
-}
-
-/**
- * Save the Featured Page meta box data
- */
-function claydellmedia_save_meta_box_data( $post_id ) {
-
-	// verify this came from the our screen and with proper authorization,
-	// because save_post can be triggered at other times
-	if ( isset( $_POST['claydellmedia_featured_page_nonce'] ) && ! wp_verify_nonce( $_POST['claydellmedia_featured_page_nonce'], 'claydellmedia_featured_page' ) ) {
-		return $post_id;
-	}
-	
-	// verify if this is an auto save routine. 
-	// If it is our form has not been submitted, so we dont want to do anything
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return $post_id;
-    }
-		
-	// Check permissions
-	if ( isset( $_POST['post_type'] ) && 'page' == $_POST['post_type'] ) {
-		if ( ! current_user_can( 'edit_page', $post_id ) )
-			return $post_id;
-	} else {
-		if ( ! current_user_can( 'edit_post', $post_id ) )
-			return $post_id;
-	}
-
-	// OK, we're authenticated: we need to find and save the data
-
-	// Update use_as_feature value, default is off
-	$use_as_feature = isset( $_POST['use_as_feature'] ) ? $_POST['use_as_feature'] : 'off';
-	update_post_meta( $post_id, '_use_as_feature', $use_as_feature ); // Save the data
-
-	if ( 'on' == $use_as_feature ) {
-		// Add the Featured term to this post
-		wp_set_object_terms( $post_id, 'Featured', 'featured' );
-	} elseif ( 'off' == $use_as_feature ) {
-		// Let's not use that term then
-		wp_delete_object_term_relationships( $post_id, 'featured' );
-	}
-		
-}
-add_action( 'save_post', 'claydellmedia_save_meta_box_data' );
-
-/**
- * Add drop down submenu indicator
- */
-class Claydellmedia_Page_Navigation_Walker extends Walker_Nav_Menu {
-    function display_element( $element, &$children_elements, $max_depth, $depth=0, $args, &$output ) {
-        $id_field = $this->db_fields['id'];
-        if ( !empty( $children_elements[ $element->$id_field ] ) ) {
-            $element->classes[] = 'claydellmedia-menu-item-parent';
-        }
-        Walker_Nav_Menu::display_element( $element, $children_elements, $max_depth, $depth, $args, $output );
-    }
-}
+	// Add Copyright and Credits to the footer.
+	function claydellmedia_credits() { ?>
+		<div class="credits">
+			<!-- begin copyright -->
+			<?php echo '&copy' . " " . date('Y') . " " . esc_attr( get_bloginfo( 'name', 'display' ) ); ?>
+				<?php printf( __( '%1$s by %2$s', 'claydell-media' ), ' &middot; Powered', '<a href="http://http://wordpress.org/" rel="generator">WordPress</a>' );
+				printf( __( '%1$s  &middot; Theme %2$s', 'claydell-media' ), '', '<a href="http://jamiethompson.com/themes/claydell-media/" rel="designer">Claydell Media</a>.' ); ?>
+		</div><!-- .credits -->
+	<?php }
+ 
+	add_action('claydellmedia_credits', 'claydellmedia_credits');

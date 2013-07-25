@@ -3,14 +3,23 @@ Theme Name: Claydell Media
 Theme URI: http://jamiethompson.com/themes/claydell-media/
 Author: Jamie Thompson
 Author URI: http://jamiethompson.com/
-Description: The Claydell Media Wordpress Theme is a responsive, semantic, HTML5, theme. Features include logo management, social icons, an image rotator, front page template, styling for post formats on both index and single views. The theme also supports thumbnails on the front page.
-Version: 1.0
+Description: The Claydell Media Wordpress Theme is a responsive, semantic, HTML5, theme. Features include logo management, social icons, styling for post formats on both index and single views.
+Version: 1.0.6
 License: GNU General Public License
 License URI: license.txt
-Tags: gray, dark, one-column, two-columns, right-sidebar, fixed-width, custom-background, custom-colors, custom-header, custom-menu, full-width-template, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready
+Tags: dark, gray, black, one-column, two-columns, right-sidebar, fixed-width, custom-background, custom-header, custom-menu, editor-style, featured-images, full-width-template, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready
+Text Domain: claydellmedia
 
 This theme, like WordPress, is licensed under the GPL.
 Use it to make something cool, have fun, and share what you've learned with others.
+
+Claydell Media WordPress Theme, Copyright (C) 2013 Jamie Thompson
+
+Credits:
+
+Claydell Media is derived from the _s theme:
+
+ _s (i.e., Underscores) http://underscores.me/, (C) 2012-2013 Automattic, Inc.
 
 Resetting and rebuilding styles have been helped along thanks to the fine work of
 Eric Meyer http://meyerweb.com/eric/tools/css/reset/index.html
@@ -79,16 +88,6 @@ q:before, q:after {
 blockquote, q {
 	quotes: "" "";
 }
-.page-template-front-page-php a:focus,
-a:focus { /* remember to define focus styles! */
-	outline: 0;
-}
-.page-template-front-page-php a:hover,
-.page-template-front-page-php a:active,
-a:hover,
-a:active { /* Improves readability when focused and also mouse hovered in all browsers people.opera.com/patrickl/experiments/keyboard/test */
-	outline: 0;
-}
 a img {
 	border: 0;
 }
@@ -97,12 +96,10 @@ a img {
 /* =Clear
 ----------------------------------------------- */
 
-.page-template-front-page-php .clear,
 .clear {
 	clear: both;
 	display: block;
 }
-.page-template-front-page-php .clear-fix:after,
 .clear-fix:after {
 	content: ".";
 	display: block;
@@ -454,7 +451,6 @@ textarea {
 .post.error404 #searchform {
 	margin: 0 0 1.6666666666em;
 }
-.page-template-front-page-php :focus,
 :focus {
 	outline: 0;
 }
@@ -498,16 +494,16 @@ a:active {
 	width: 100%;
 }
 .site-title a {
-	color: #555;
+	color: #e9e9e9;
 }
 .site-title a:hover {
 	color: #0055ff;
 	text-decoration: none;
 }
 .site-description {
-	border-top: 1px dotted #545454;
+	border-top: 1px dotted #e9e9e9;
 	clear: none;
-	color: #545454;
+	color: #e9e9e9;
 	float: right;
 	font-family: 'Helvetica', Arial, sans-serif;
 	font-size: 12px;
@@ -646,18 +642,31 @@ a:active {
 	background: -webkit-linear-gradient(#fafafa, #9dced1);
 }
 
-/* Walker Submenu Indicator */
-.claydellmedia-menu-item-parent > a:after {
-    color: #ccc;
-    content: url(images/darr.png);
-    font-size: 10px;
-	padding-left: 5px;
-    vertical-align: 1px;
+/* Submenu Indicator */
+.main-navigation li {
+	float: left;
+	position: relative;
 }
- 
-.sub-menu .claydellmedia-menu-item-parent > a:after {
-    content: url(images/rarr.png);
-	padding-left: 5px;
+.main-navigation li.has-children a {
+	padding-right:25px;
+}
+.main-navigation li.has-children > a:after {
+	bottom: 7px;
+	content: url(images/darr.png);
+	position: absolute;
+	right: 10px;
+}
+.main-navigation li li.has-children > a:after {
+	bottom: 10px;
+	content: url(images/rarr.png);
+	position: absolute;
+	right: 10px;
+}
+.main-navigation li .menu-logout,
+.main-navigation li .menu-login {
+	color: #fff;
+	font-weight: bold;
+	text-transform: uppercase;
 }
 
 
@@ -761,15 +770,32 @@ a:active {
 ----------------------------------------------- */
 
 /* Image style */
+#content .gallery .gallery-icon img,
 img[class*="align"],
 img[class*="wp-image-"],
-#content .gallery .gallery-icon img {/* Add fancy borders to all WordPress-added images but not things like badges and icons and the like */
+img[class*="attachment-"] {/* Add fancy borders to all WordPress-added images but not things like badges and icons and the like */
 	background-color: #fff;
-	border: 1px solid #e2e2e2;
-	-webkit-box-shadow: (228, 223, 232, 0.5) 1px 1px 0px;
-	-moz-box-shadow: (228, 223, 232, 0.5) 1px 1px 0px;
-	box-shadow: rgba(228, 223, 232, 0.5) 1px 1px 0px;
-	padding: 6px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
+	-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
+	box-shadow: inset 0px 2px 2px rgba(0,0,0,0.3);
+	margin-bottom: 3.2em;
+	padding: 5px;
+}
+#content .gallery .gallery-icon img,
+#features a img,
+.thumb img,
+.entry-content a img,
+.comment-content img[height], img[class*="align"], img[class*="wp-image-"] {
+	background-color: #fff;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
+	-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
+	box-shadow: inset 0px 2px 2px rgba(0,0,0,0.3);
+	margin-bottom: 3.2em;
+	padding: 5px;
 }
 .entry-content img.wp-smiley,
 .comment-content img.wp-smiley {
@@ -781,29 +807,27 @@ img[class*="wp-image-"],
 .thumb img,
 .site-header img,
 .entry-content img,
-img.size-full {
-	max-width: 98%;
+img.size-full,
+img.size-large,
+img.header-image,
+img.wp-post-image {
+	max-width: 100%;
 	width: auto; /* Prevent stretching of full-size images with height and width attributes in IE8 */
 }
-#features a img,
 .thumb img,
-.page-template-front-page-php .block .avatar img,
-.page-template-front-page-php img,
 .site-header img,
 .entry-content img,
 .comment-content img,
 .widget img {
 	max-width: 100%; /* Fluid images for posts, comments, and widgets */
 }
-#features a img,
 .thumb img,
-.page-template-front-page-php .block .avatar img,
-.page-template-front-page-php img,
 .site-header img,
 .entry-content img,
 .comment-content img[height],
 img[class*="align"],
-img[class*="wp-image-"] {
+img[class*="wp-image-"],
+img[class*="attachment-"] {
 	height: auto; /* Make sure images with WordPress-added height and width attributes are scaled correctly */
 }
 img.alignleft,
@@ -1004,7 +1028,7 @@ object {
 #respond input[type=submit] {
 }
 .required {
-	color: #cc0033;
+	color: #0054ff;
 }
 
 
@@ -1248,8 +1272,6 @@ object {
 	margin: 0 0 1.0em 0;
 }
 
-/*************************************Start****************************************************************************************************************************************************************************************************/
-
 
 /* =IE8
 -------------------------------------------------------------- */
@@ -1290,6 +1312,49 @@ object {
 	z-index: 999;
 }
 
+/* Footer Widgets */
+#footer-widget {
+    background: #0a0a0a;
+	border-bottom: none; /* border-bottom: 1px solid #c9c9c9; */
+	box-shadow: none; /* box-shadow: 0 1px 0 0 #fff; */
+    display: block;
+    height: auto;
+    overflow: hidden;
+    width: 100%;
+}
+#footer-widget-1 {
+	float: left;
+	margin-left:2.4em;
+	margin-right:2.2em;
+	width: 29%;
+}
+#footer-widget-2 {
+	float: left;
+	margin-right:2.2em;
+	width: 29%;
+}
+#footer-widget-3 {
+	float: left;
+	width: 29%;
+}
+#footer-widget .widget-title {
+    border-bottom: none; /* border-bottom: 1px solid #c9c9c9; */
+    box-shadow: none; /* box-shadow: 0 1px 0 0 #fff; */
+	color: #545454;
+    font-family: Arial, Verdana, sans-serif;
+	font-size: 15px;
+	font-size: 1.5rem;
+	line-height: 1.3333333333em;
+	margin: 0 0 1.3333333333em 0;
+    margin-bottom: 10px;
+	padding-bottom: 5px;
+    text-align: justify;
+	text-transform: uppercase;
+}
+.home #footer-widget {
+    display: none; /* display: block; */
+}
+
 
 /* =Jetpack: Infinite Scroll
 -------------------------------------------------------------- */
@@ -1318,85 +1383,6 @@ object {
 .infinity-end.neverending #colophon {
 	display: block;
 }
-
-
-/* =Front Page (Home Page)
--------------------------------------------------------------- */
-
-/* Front Page Header */
-.page-template-front-page-php #masthead {
-	background: #222; /* Show a solid color for older browsers */
-	background: -moz-linear-gradient(#252525, #0a0a0a);
-	background: -o-linear-gradient(#252525, #0a0a0a);
-	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#252525), to(#0a0a0a)); /* older webkit syntax */
-	background: -webkit-linear-gradient(#252525, #0a0a0a);
-	-webkit-box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 2px;
-	-moz-box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 2px;
-	box-shadow: rgba(0, 0, 0, 0.4) 0px 1px 2px;
-	margin: 0 0 3.5em 0;
-	padding-bottom: 1.7142857142em;
-}
-.page-template-front-page-php #masthead .site-branding {
-	overflow: hidden;
-	margin: 0 11.1428571428%;
-}
-.page-template-front-page-php #masthead .site-branding {
-    margin: 0 4.1429%;
-    overflow: hidden;
-}
-.page-template-front-page-php .site-title {
-	clear: none;
-	float: left;
-	font-size: 44px;
-	font-size: 4.4rem;
-	line-height: 1.2em;
-    padding: 0.5714285714em 0 0;
-	margin: 0;
-	width: 100%;
-}
-.page-template-front-page-php .site-title a {
-	color: #555;
-    text-decoration: none;
-}
-.page-template-front-page-php .site-title a:hover {
-	color: #0055ff;
-	text-decoration: none;
-}
-.page-template-front-page-php .site-title a:focus{
-	text-decoration: none;
-}
-.page-template-front-page-php .site-description {
-	border-top: 1px dotted #545454;
-	clear: none;
-	color: #545454;
-	float: right;
-	font-family: 'Helvetica', Arial, sans-serif;
-	font-size: 12px;
-	font-size: 1.2rem;
-	font-style: normal;
-	letter-spacing: 0.5em;
-	line-height: 1.8333333333em;
-	margin: 0.3571428571428571em 0 1.5em;
-	text-align: center;
-    width: 100%;
-}
-.page-template-front-page-php .header-image-link {
-	line-height: 0;
-	margin: 1.2857142857em 0 1em;
-}
-/* Front Page Body */
-.page-template-front-page-php .front-intro-title-image img {
-	background-color: transparent;
-	border: none;
-	box-shadow: none;
-	padding: 0;
-}
-.page-template-front-page-php .site-footer {
-    border-top: medium none;
-    clear: both;
-    margin: 0;
-    padding: 1.5714285714em 4% 1.5714285714em;
-}
 .full-width .hentry,
 .image-attachment .hentry,
 .no-sidebar .hentry,
@@ -1405,177 +1391,22 @@ object {
     width: auto;
 }
 
-#front-site-intro {
-    margin-top: 1em;
-}
-#front-site-intro .front-intro-title {
-	color: #555;
-	color: rgba(55, 55, 55, 0.5);
-    -pie-background:  rgba(55, 55, 55, 0.5);
-    behavior: url(PIE.htc); /*  CSS3Pie adds some modern CSS3 features to older versions of IE, including rgba background colours */
-	display: none;
-	font-size: 32px;
-	font-size: 3.2rem;
-	letter-spacing: 1.5em;
-	margin: 0 0 0 0.8em;
-	text-align: center;
-	text-shadow: 4px 4px 4px #aaa;
-	text-transform: none; /* capitalize | uppercase |
-  lowercase | none */
-	width: 100%;
-}
-.page-template-front-page-php .front-intro-title-image {
-	filter: alpha(opacity=70);
-	-moz-opacity: 0.7;
-	opacity: 0.7;
-    clear: both;
-    display: block;
-    margin: 8px auto;
-	margin: 0.4em auto;
-}
-.page-template-front-page-php .front-intro-description {
-	border-top: 0;
-	font-family: 'Helvetica', Arial, sans-serif;
-	font-size: 16px;
-	font-size: 1.6rem; /* 10 / 10 */
-	font-weight: normal;
-	letter-spacing: 0.5em; /* 8px */
-	margin: 0 0 1em 0;
-	text-align: center;
-    text-transform: none; /* capitalize | uppercase |
-  lowercase | none */
-}
-.page-template-front-page-php .front-intro-description a {
-	border-bottom: 1px dotted #c9c9c9;
-	color: #545454;
-	cursor: help;
-	text-decoration: none;
-}
-.page-template-front-page-php .front-intro-description a:focus,
-.page-template-front-page-php .front-intro-description a:active,
-.page-template-front-page-php .front-intro-description a:hover {
-	color: #9a9a9a;
-	border-bottom: 1px dotted #9a9a9a;
-}
-.page-template-front-page-php .front-intro-description p {
-    margin: 0 0 3.5em;
-}
-.page-template-front-page-php #main {
-	margin-top: 1em;
-}
-.page-template-front-page-php #primary {
-    border-bottom: none;
-    float: left;
-    margin: 0 0 0.5em;
-    padding: 0 0 2.5em;
-    width: 100%;
-}
-.page-template-front-page-php #content {
-	float: none;
-	margin: 0 4% 3.14286em;
-    padding: 0;
-	width: auto;
-}
-.page-template-front-page-php #secondary {
-    display: none;
-}
-.page-template-front-page-php .entry-title {
-    border-bottom: 1px solid #c9c9c9;
-    box-shadow: 0 1px 0 0 #fff;
-    font-size: 3.2rem;
-    line-height: 1.5em;
-    margin: 0 0 0.87em;
-    padding-bottom: 0;
-    text-align: left;
-    text-transform: none;
-}
-.page-template-front-page-php .widget-area .widget p,
-.page-template-front-page-php .widget-area .widget li,
-.page-template-front-page-php .widget-area .widget .textwidget {
-    font-size: 13px;
-	font-size: 1.3rem;
-    line-height: 1.5em;
-}
-.page-template-front-page-php .block {
-    float: left;
-    width: 48.8%;
-}
-.page-template-front-page-php #featured-block-1 {
-    margin-right:2.4%;
-}
-.page-template-front-page-php .block .avatar {
-	background-color: #fff;
-	border: 1px solid #e4dfe8;
-	-webkit-box-shadow: (228, 223, 232, 0.5) 1px 1px 0px;
-	-moz-box-shadow: (228, 223, 232, 0.5) 1px 1px 0px;
-	box-shadow: rgba(228, 223, 232, 0.5) 1px 1px 0px;
-	float: left;
-	margin-right: 1.5714285714em;
-	margin-top: 0.3571428571em;
-	padding: 6px;
-}
-.page-template-front-page-php .block .author-links {
-    float:left;
-    margin:.25em 10px 0 0;
-    width:100%;
-}
-.page-template-front-page-php .block ul {
-    border-top:1px solid #ccc;
-    list-style:none;
-    margin:0;
-}
-.page-template-front-page-php .block ul li {
-    display:inline;
-}
-.page-template-front-page-php .block ul li a {
-    border-bottom:1px solid #ccc;
-    box-shadow: 0 1px 0 0 #fff;
-    color:#666;
-    display:block;
-    padding:6px 0;
-    text-decoration:none;
-}
-.page-template-front-page-php .block ul li a:hover,
-.page-template-front-page-php .block ul li a:active {
-    background:#fafafa;
-    color: #0054ff;
-}
-.page-template-front-page-php #featured-block-1 .block p {
-    margin-bottom: 1.57143em;
-    text-align: justify;
-}
-.page-template-front-page-php .front-meta {
-    margin-top: 1.57143em;
-}
-.page-template-front-page-php .post-sprite img {
-    border: 1px solid #a9a9a9;
-    height: auto;
-    padding: 2px;
-    vertical-align: middle;
-}
-
-/* Comments */
-.page-template-front-page-php #comments {
-    margin: 0 4% 3.14286em;
-    padding: 0;
-    position: relative;
-    width: 100%;
-}
-
-
 /* =Footer
 -------------------------------------------------------------- */
 
+.site-footer .backtotop {
+    float: right;
+}
 .site-footer .backtotop a {
 	filter: alpha(opacity=20);
 	-moz-opacity: 0.2;
-	opacity: 0.2;
-    height: 3em;
+    bottom: 5px;
+    height: 50px;
+    opacity: 0.2;
     position: fixed;
-    right: 0;
-    top: 2.5em; 
-    width: 5.5em; 
-	z-index: 9999;
+    right: 5px;
+    width: 50px;
+    z-index: 9999;
 }
 .site-footer .backtotop a:hover {
 	filter: alpha(opacity=100);
@@ -1589,8 +1420,8 @@ object {
 
 .entry-content .attachment img {
 	background: #e1e1e1;
-	-moz-border-radius: 0;
-	border-radius: 0;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
 	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
 	-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
 	box-shadow: inset 0px 2px 2px rgba(0,0,0,0.3);
@@ -1601,6 +1432,10 @@ object {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+}
+dt.gallery-icon {
+    font-weight: bold;
+    margin-bottom: -11px;
 }
 
 
@@ -1632,7 +1467,6 @@ object {
 .page-links {
 	clear: both;
 	margin: 0 0 24px;
-	margin: 0 0 1.5rem;
 }
 .page-links a {
 	border: 1px solid #c9c9c9;
@@ -1651,7 +1485,7 @@ object {
 	text-decoration: underline;
 }
 .more-link {
-    background: url("images/rarr-0055ff.png") no-repeat scroll right 7px transparent ;
+    background: url("images/rarr-more-link.png") no-repeat scroll right 7px transparent ;
     border: medium none;
     display: inline-block;
     font-size: 11px;
@@ -1695,7 +1529,9 @@ object {
 }
 /* Author Info */
 .author-info {
+    margin: 0 0 3.1428571428em 5.6333333333%;
 	overflow: hidden;
+    padding: 0;
 }
 .singular .author-info {
 	background: #f9f9f9;
@@ -1705,14 +1541,44 @@ object {
 	margin: 2.2em -35.6% 0 -35.4%;
 	padding: 20px 35.4%;
 }
-.archive .author-info {
-	margin: 0 4%;
-	padding-bottom: 3.1428571428em;
+.author .page-title  {
+    border-bottom: 1px solid #c9c9c9;
+    box-shadow: 0 1px 0 0 #fff;
+    line-height: 1.5em;
+    margin: 0 0 0.87em;
+	clear: none;
+	margin: -2px 0 0 0;
+}
+.author h2.page-title {
+	color: #545454;
+	font-size: 30px;
+	font-size: 3.0rem;
+	margin: 0 0 0.3666666666em 5.6333333333%;
+}
+.author .entry-header .author-nothing-found h3 {
+    color: #545454;
+    font-size: 1.8rem;
+    margin: 3.5714285714em 0 0.6111111111em;
+}
+.author h3.nothing-found,
+.author h3.author-posts {
+    color: #545454;
+    font-size: 1.8rem;
+    margin: 1.5714285714em 0 2em;
+}
+.author-description h3 {
+	color: #545454;
+	margin: 0;
+}
+.author .entry-content,
+.author .entry-summary {
+    clear: both;
+    margin: 1.5714285714em 0 0;
 }
 .author-avatar {
-	float: left;
-	margin-right: 0;
-	margin-right: 0;
+    float: left;
+    margin-right: 0;
+    margin-top: 1.5714285714em
 }
 .author-avatar ul {
     float: right;
@@ -1748,44 +1614,6 @@ object {
 	margin: 5px 0 10px -16px;
 	margin: 0.3125em 0 0.625em -1em;
 }
-.author-description h3 {
-	color: #545454;
-	margin: 0;
-}
-#authorlist ul {
-list-style: none;
-margin: 0;
-padding: 0;
-}
-#authorlist li {
-    border-bottom: 1px solid #c9c9c9;
-	box-shadow: 0 1px 0 0 #fff;
-    height: auto;
-    list-style: none;
-    margin: 0 0 0.3571428571em;
-    padding: 1.0714285714em 0;
-}
-#authorlist img.photo {
-	background: #fff;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	-webkit-box-shadow: 0 1px 2px #bbb;
-	-moz-box-shadow: 0 1px 2px #bbb;
-	box-shadow: 0 1px 2px #bbb;
-	float: left;
-	height: 80px;
-	margin: 0 15px 0 0;
-	margin: 0 0.9375em 0 0;
-	padding: 3px;
-	padding: 0.1875em;
-	width: 80px;
-}
-#authorlist div.authname {
-}
-#authorlist {
-	margin-bottom: 2em;
-}
- /*************************************End***************************************************************************************************************************************************************************************************/
 
 /* =Responsive Structure
 -------------------------------------------------------------- */
@@ -1857,9 +1685,6 @@ padding: 0;
 	}
 	.archive-header {
 		margin: 0 4% 2.85714em;
-	}
-	#featured-rotator .excerpt {
-    display: none;
 	}
 }
 
@@ -1967,19 +1792,6 @@ padding: 0;
 		max-width: 98%;
 		width: auto;
 	}
-	#featured-rotator .slide-nav {
-	margin-left: -60px;
-	}
-	#featured-rotator .excerpt {
-    display: none;
-	}
-	#featured-block-1 {
-		margin-right: 0;
-	}
-	.page-template-front-page-php .block {
-		float: left;
-		width: 100%;
-	}
 }
 @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
 	#page {
@@ -2009,14 +1821,5 @@ padding: 0;
 	.entry-content iframe,
 	.entry-content object {
 		height: auto;
-	}
-	#featured-rotator .slide-nav {
-	margin-left: -70px;
-	}
-	#featured-rotator .excerpt {
-    display: none;
-	}
-	.page-template-front-page-php .block {
-		width: 100%;
 	}
 }
